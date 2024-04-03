@@ -15,6 +15,15 @@ function gen_prod(v,M)
     return M;
 end function;
 
+//applies the permutation specified by list to the columns of the matrix G
+//TODO
+function gen_perm(p,G)
+    for i in [1..#p] do
+        SwapColumns(~G,p[1],p[i]);
+    end for;
+    return G;
+end function;
+
 //generate all lists of length n of nonzero elements in GF(q)
 function nonzero_list(q,n)
     F := GF(q);
@@ -30,6 +39,20 @@ function nonzero_list(q,n)
     list2 := [];
     end for;
     return list1;
+end function;
+
+//auxiliary function to generate distinct subsequences of [1..n] in a decent way (ascending sequences)
+function AllSequences(n)
+    if n eq 1 then
+        list := [[],[1]];
+    else
+        list := AllSequences(n-1);
+        m := #list;
+        for i in [1..m] do
+            Append(~list,list[i] cat [n]);
+        end for;
+    end if;
+    return list;
 end function;
 
 //brute force samples a random MDS code of params n, k ,q (attempts is the number of tries before spitting the universe code)
@@ -54,6 +77,22 @@ end function;
 //specific purpose code
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//computes the weights defined as mu_r(C)=min{s : for every support S of cardinality S, rk(G(C)_S)>=r}
+//input is a code (not its gen.matrix)
+function MDSweight_1(C)
+    n := Length(C);
+    k := Dimension(C);
+    M := GeneratorMatrix(C);
+    weights := [{i} : i in [0..k]];
+    rows := [i : i in [1..k]];
+    cols := Prune(Reverse(AllSequences(n)));    //Prune(Reverse()) is just to take the empty list out
+    for j in [1..#cols] do
+        s := #cols[j];
+        w := Rank(Submatrix(M,rows,cols[j]));
+        Include(~weights[w+1],s);
+    end for;
+    return weights;
+end function;
 
 //check for MDS subcodes of dimension nu of a code C
 function subcode_explorer(C,nu)
@@ -96,7 +135,6 @@ function equiv_meet2(C,listM)
     witness_scale :=[[1 : i in [1..n]] : j in [0..k]];
     witness_perm := [S!(1) : i in [0..k]];
     mu := [n : i in [0..k]];
-
     Perm := [g : g in S];
     num_perm := Factorial(n);
     Scale := nonzero_list(#Fq,n);
@@ -156,17 +194,14 @@ end function;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //examples
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-q := 5;
-n := q+1;      //for n =q+1, q>=k, all MDS codes are equivalent to a RS
-k := 3;
+//q := 5;
+//n := q+1;      //for n =q+1, q>=k, all MDS codes are equivalent to an extended RS
+//k := 4;
 
-C := RandomLinearCode(GF(q),n,k);
-listM := [ext_RS(q,j) : j in [1..n-1]];
-mu, witness_codes, witness_scale, witness_perm := equiv_meet2(C,listM);
+//C := RandomLinearCode(GF(q),n,k);
+//listM := [ext_RS(q,j) : j in [1..n-1]];
+//mu, witness_codes, witness_scale, witness_perm := equiv_meet2(C,listM);
 //sanity check
-for i in [1..#witness_codes]do
-//    D := LinearCode( (gen_prod(witness_scale[i],G))^witness_perm[i]);
-//    bool,mon := IsEquivalent(D,C);
-//    bool;
-    Dimension(C meet witness_codes[i]);
-end for;
+//for i in [1..#witness_codes] do
+//    Dimension(C meet witness_codes[i]);
+//end for;
