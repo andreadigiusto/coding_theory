@@ -1,4 +1,4 @@
-
+//SetPath("C:\Documents\GitHub\coding_theory");
 
 MacWMatr := function (n,k,q)
 

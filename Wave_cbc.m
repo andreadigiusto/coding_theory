@@ -1,4 +1,6 @@
 //support functions
+
+//q-binomials
 function binom(u,v,q);
     f:=0;
     if u le -1 or v le -1 then;
@@ -45,6 +47,8 @@ function gen_prod(v,M)
     return M;
 end function;
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 //parameters
 
 k_U := 7;
@@ -71,21 +75,23 @@ function Wave_GM(q,k_U,k_V)
     return GW,a,b,c,d;         //GaUcU, GbVdV;
 end function;
 
-GW,a,b,c,d := Wave_GM(q,k_U,k_V);
-C := LinearCode(GW);
-R :=RandomLinearCode(GF(q),2*n,n);
-Dimension(Hull(R));
-Dimension(Hull(C));
-GWT := Transpose(GW);
-for i in [1..n] do
-    VerticalJoin(~GWT,GWT[n+i]);
-end for;
-GWext := Transpose(GWT);
-Cext := LinearCode(GWext);
-Rext := RandomLinearCode(GF(q),Length(Cext),n);
-Dimension(Hull(Cext));
-Dimension(Hull(Rext));
-
+switch1 := 0;
+if switch1 eq 1 then
+    GW,a,b,c,d := Wave_GM(q,k_U,k_V);
+    C := LinearCode(GW);
+    R :=RandomLinearCode(GF(q),2*n,n);
+    Dimension(Hull(R));
+    Dimension(Hull(C));
+    GWT := Transpose(GW);
+    for i in [1..n] do
+        VerticalJoin(~GWT,GWT[n+i]);
+    end for;
+    GWext := Transpose(GWT);
+    Cext := LinearCode(GWext);
+    Rext := RandomLinearCode(GF(q),Length(Cext),n);
+    Dimension(Hull(Cext));
+    Dimension(Hull(Rext));
+end if;
 
 //n is half the length of the final code
 function Wave_code(q,n,k_U,k_V)
@@ -132,17 +138,18 @@ function add_cols(m,M)
     return Transpose(A);
 end function;
 
-function Hull_distr(q,n,k_U,k_V,attempts)
+Wave := 1;        // =1 for Wave, =0 for random
+function Hull_distr(q,n,k_U,k_V,attempts,Wave)
     distr := [RealField(5)!0 : i in [1..n]];
     l := RealField(5)!1/attempts;
-    if switch eq 1 then
+    if Wave eq 1 then
         for i in [1..attempts] do
             W := Wave_code(q,n,k_U,k_V);
             W_ext := LinearCode(add_cols(n,GeneratorMatrix(W)));
             h := Dimension(Hull(W_ext));
             distr[h+1] := distr[h+1] + l;
         end for;
-    elif switch eq 0 then
+    elif Wave eq 0 then
         for i in [1..attempts] do
             C := RandomLinearCode(GF(q),2*n,k_U+k_V);
             C_ext := LinearCode(add_cols(n,GeneratorMatrix(C)));
@@ -153,7 +160,7 @@ function Hull_distr(q,n,k_U,k_V,attempts)
     return distr;
 end function;
 
-//Hull_distr(q,n,k_U,k_V,attempts);
+//Hull_distr(q,n,k_U,k_V,attempts,Wave);
 
 //random v Wave
 //average number of 2 dimensional subcodes supported on t columns of an [n,k] random code, t=1..n
@@ -177,11 +184,16 @@ function supp_dimt_subc(C,t,attempts)
     return supports;
 end function;
 
-
-//other attack
-function dim2_sub(C)
-    k := Dimension(C);
-    n := Length(C);
-    G := GeneratorMatrix(C);
-    
-end function;
+//average difference in the number of info sets between random and Wave
+//needs lot of space (does not work on student version)
+avg_diff := 0;
+att := 100;
+for i in [1..att] do
+    W:=Wave_code(q,n,k_U,k_V);
+    C := RandomLinearCode(GF(q),2*(k_U+k_V),k_U+k_V);
+    w:=#AllInformationSets(W);
+    c:=#AllInformationSets(C);
+    avg_diff:=avg_diff + c-w;
+    c-w;
+end for;
+RealField()!(avg_diff/att);

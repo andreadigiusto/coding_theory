@@ -341,3 +341,26 @@ function RadiusDistr(n,k,q,samples)
     //a,b := Maximum(DDistr);
     return DDistr, RealField(3)!avg/samples; //a , RealField(3)!(b/n)
 end function;
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//random code
+aaaaaaaaaa := 0;
+if aaaaaaaaaa eq 1 then
+//scarto nel numero di info set per codici random
+q := 13;
+n := 10;
+k := 5;
+samples := 100;
+function rand_IS(q,n,k,samples)
+    avg := 0;
+    for i in [1..samples] do
+        C := RandomLinearCode(GF(q),n,k);
+        avg := avg + RealField(5)!(Binomial(n,k)-#AllInformationSets(C))/Binomial(n,k);
+    end for;
+    return avg/samples;
+end function;
+
+
+end if;
