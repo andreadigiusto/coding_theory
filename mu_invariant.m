@@ -15,6 +15,15 @@ function gen_prod(v,M)
     return M;
 end function;
 
+//applies the permutation specified by list to the columns of the matrix G
+//TODO
+function gen_perm(p,G)
+    for i in [1..#p] do
+        SwapColumns(~G,p[1],p[i]);
+    end for;
+    return G;
+end function;
+
 //generate all lists of length n of nonzero elements in GF(q)
 function nonzero_list(q,n)
     F := GF(q);
@@ -32,7 +41,7 @@ function nonzero_list(q,n)
     return list1;
 end function;
 
-//auxiliary function to generate distinct subsequences of [1..n] in a decent way
+//auxiliary function to generate distinct subsequences of [1..n] in a decent way (ascending sequences)
 function AllSequences(n)
     if n eq 1 then
         list := [[],[1]];
@@ -126,7 +135,6 @@ function equiv_meet2(C,listM)
     witness_scale :=[[1 : i in [1..n]] : j in [0..k]];
     witness_perm := [S!(1) : i in [0..k]];
     mu := [n : i in [0..k]];
-
     Perm := [g : g in S];
     num_perm := Factorial(n);
     Scale := nonzero_list(#Fq,n);
@@ -186,12 +194,12 @@ end function;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //examples
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-q := 5;
-n := q+1;      //for n =q+1, q>=k, all MDS codes are equivalent to an extended RS
-k := 4;
+//q := 5;
+//n := q+1;      //for n =q+1, q>=k, all MDS codes are equivalent to an extended RS
+//k := 4;
 
-C := RandomLinearCode(GF(q),n,k);
-listM := [ext_RS(q,j) : j in [1..n-1]];
+//C := RandomLinearCode(GF(q),n,k);
+//listM := [ext_RS(q,j) : j in [1..n-1]];
 //mu, witness_codes, witness_scale, witness_perm := equiv_meet2(C,listM);
 //sanity check
 //for i in [1..#witness_codes] do
