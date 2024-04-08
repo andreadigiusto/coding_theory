@@ -272,23 +272,6 @@ function AllSequences(n)
     return list;
 end function;
 
-//computes the weights defined as mu_r(C)=min{s : for every support S of cardinality S, rk(G(C)_S)>=r}
-//input is a code (not its gen.matrix)
-function MDSweight_1(C)
-    n := Length(C);
-    k := Dimension(C);
-    M := GeneratorMatrix(C);
-    weights := [{i} : i in [0..k]];
-    rows := [i : i in [1..k]];
-    cols := Prune(Reverse(AllSequences(n)));    //Prune(Reverse()) is just to take the empty list out
-    for j in [1..#cols] do
-        s := #cols[j];
-        w := Rank(Submatrix(M,rows,cols[j]));
-        Include(~weights[w+1],s);
-    end for;
-    return weights;
-end function;
-
 //check condition for nestability of MDS codes
 function nest_check(n,q)
     b := 0;
@@ -468,31 +451,6 @@ function equiv_meet2(C,listM)
         end for;
     end for;
     return mu, witness_codes, witness_scale, witness_perm;
-end function;
-
-//ranges nu in the function above from 1 to n-1 (code_att and gen_att are the same as above)
-//dim_ub (dim_lb) = upper (lower) bound on dimension nu, <=Length(C)-1 (>=1)
-function list_MDS_meet(C,code_att,gen_att,dim_lb,dim_ub)
-    mu_record := [];
-    codes := [];
-    for nu in [dim_lb..dim_ub] do     
-        nu;                               
-        mu_list, code_list := random_MDS_meet(C,nu,code_att,gen_att);
-        Append(~mu_record,mu_list);
-        Append(~codes,code_list);
-        nu;                               
-    end for;
-    mu_list := [];
-    witness_codes := [];
-    for r in [1..Dimension(C)] do
-        r;
-        [mu_record[l][r] : l in [1..#mu_record]];
-        mu_r, pos := Minimum([mu_record[l][r] : l in [1..#mu_record]]);
-        mu_r;
-        Append(~mu_list,mu_r);
-        Append(~witness_codes,codes[pos][r]);
-    end for;
-    return mu_list,witness_codes;
 end function;
 
 //generates an extended RS code of length n = q+1 and dimension k
