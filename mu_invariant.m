@@ -93,13 +93,14 @@ function subcode_explorer(C,nu)
     #generators;
     set_nu := SetToIndexedSet(Subsets( generators , nu));
     x := #set_nu;
+    MDSlist := [];
     for i in [1..x] do
         C1 := sub<C|set_nu[i]>;
         if MinimumDistance(C1) eq n-nu+1 and Dimension(C1) eq nu then
-            return C1;
+            Append(~MDSlist,C1);    //return C1;
         end if;
     end for;
-    return 0;
+    return MDSlist;
 end function;
 
 //intersection of the equivalence class of C with some MDS codes in a sequence listM;
@@ -220,9 +221,9 @@ end function;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //examples
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-q := 11;
-n := 8;      //for n =q+1, q>=k, all MDS codes are equivalent to an extended RS
-k := 4;
+//q := 11;
+//n := 8;      //for n =q+1, q>=k, all MDS codes are equivalent to an extended RS
+//k := 4;
 
 //C := RandomLinearCode(GF(q),n,k);
 
