@@ -342,7 +342,17 @@ function RadiusDistr(n,k,q,samples)
     return DDistr, RealField(3)!avg/samples; //a , RealField(3)!(b/n)
 end function;
 
-
+function rate_density(n,q,e)
+    a := Floor(n * e);
+    qbin_list := [binom(n,j,q) : j in [0..n]];
+    S := &+qbin_list;
+    if n mod 2 eq 0 then
+        p := &+qbin_list[(n div 2)-a..(n/2)+a];
+    else
+        p := &+qbin_list[(n+1)/2-a..(n-1)/2+a];
+    end if;
+    return RealField(5)!p/S;
+end function;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //random code
