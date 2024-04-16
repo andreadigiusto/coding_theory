@@ -1,15 +1,17 @@
 //Euler-Mascheroni constant
 EMconst := 0.5772156649;
 
+//automatically approxiamtes after certain parameter thresholds, but goes way faster is k is a fraction of n and is accurate to many decimal points
 qary_bin := function(n,k,q)
-    card := 1;
-    for i in [0..k-1] do
-        card := card * ((q^n-q^i)/(q^k-q^i));
-    end for;
-
-    return card;
+    if k gt n then
+        return 0;
+    elif k eq 0 then
+        return 1;
+    end if;
+    return q^k * qary_bin(n-1,k,q) + qary_bin(n-1,k-1,q);
 end function;
 
+//always returns exact values, but is slower
 function binom(u,v,q);
     f:=0;
     if u le -1 or v le -1 then;
