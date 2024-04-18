@@ -68,6 +68,25 @@ function diffSet_ratio(w1,w2,n,q)
     return RealField(3)!(diffSet_size/Hball_size(2*(w1+w2),2*n,q));
 end function;
 
+//computes the tensor code C1 \otimes C2 (via pcm)
+function TensorCode(C1,C2)
+    K := Alphabet(C1);
+    n := Length(C2) * Length(C1);
+    d := MinimumDistance(C2);
+    H1 := ParityCheckMatrix(C1);
+    H2 := ParityCheckMatrix(C2);
+    H := KroneckerProduct(H1,H2);
+    C := Dual(LinearCode(H));
+    if Dimension(C) ge Dimension(BDLC(K,n,d)) then
+        print("this is a good code:");
+    else 
+        print("dio can");
+    end if;
+    Dimension(C);
+    Dimension(BDLC(K,n,d));
+    return C;
+end function;
+
 //finds a code A to complement B as an error correcting couple for C with (dim(C) ge dim)
 function findA(B,t,dim,attempts)
     n := Length(B);
@@ -85,15 +104,18 @@ function findA(B,t,dim,attempts)
 end function;
 
 //experiment for augmenting codes
-q := 7;
-n := 7;
-G := [[ 1, 1, 1, 1, 1, 1, 1 ],
-      [ 0, 1, 2, 3, 4, 5, 6 ],
-      [ 0, 1, 4, 2, 2, 4, 1 ]];
-C := LinearCode< GF(q) , n | G >;
-CC := LinearCode< GF(q) , 2*n | [G[i] cat G[i] : i in [1..3]] >;
-A := GeneratorMatrix(CC); 
-B := VerticalJoin(A,Matrix(GF(q),[[0,0,0,0,1,2,3,4,5,0,0,0,0,0],[0,0,0,0,0,1,2,3,4,5,0,0,0,0]]));
-CCC := LinearCode(B);
-V := AmbientSpace(CCC);
-y := Random(CCC) + V![0,0,0,0,0,0,0,1,2,3,0,0,0,0];
+switch := 0;
+if switch eq 1 then
+    q := 7;
+    n := 7;
+    G := [[ 1, 1, 1, 1, 1, 1, 1 ],
+        [ 0, 1, 2, 3, 4, 5, 6 ],
+        [ 0, 1, 4, 2, 2, 4, 1 ]];
+    C := LinearCode< GF(q) , n | G >;
+    CC := LinearCode< GF(q) , 2*n | [G[i] cat G[i] : i in [1..3]] >;
+    A := GeneratorMatrix(CC); 
+    B := VerticalJoin(A,Matrix(GF(q),[[0,0,0,0,1,2,3,4,5,0,0,0,0,0],[0,0,0,0,0,1,2,3,4,5,0,0,0,0]]));
+    CCC := LinearCode(B);
+    V := AmbientSpace(CCC);
+    y := Random(CCC) + V![0,0,0,0,0,0,0,1,2,3,0,0,0,0];
+end if;
