@@ -4,6 +4,31 @@
 //general purpose code
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//gaussian binomial
+function binom(u,v,q);
+    f:=0;
+    if u le -1 or v le -1 then;
+    f:=0;
+    end if;
+    if v eq 0 and u ge 0 then;
+    f:=1;
+    end if;
+    if v ge 1 and u le v-1 then;
+    f:=0;
+    end if;
+    if v ge 1 and u ge v then;
+    P:=1;
+    Q:=1;
+    for i in [0..v-1] do;
+    P:=P*(q^(u-i)-1);
+    end for;
+    for i in [0..v-1] do;
+    Q:=Q*(q^(i+1)-1);
+    end for;
+    f:=P/Q;
+    end if;
+    return f;
+end function;
 
 //returns the product v * M (component wise on columns)
 //v vector, M matrix
@@ -77,23 +102,6 @@ end function;
 //specific purpose code
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//computes the weights defined as mu_r(C)=min{s : for every support S of cardinality S, rk(G(C)_S)>=r}
-//input is a code (not its gen.matrix)
-function MDSweight_1(C)
-    n := Length(C);
-    k := Dimension(C);
-    M := GeneratorMatrix(C);
-    weights := [{i} : i in [0..k]];
-    rows := [i : i in [1..k]];
-    cols := Prune(Reverse(AllSequences(n)));    //Prune(Reverse()) is just to take the empty list out
-    for j in [1..#cols] do
-        s := #cols[j];
-        w := Rank(Submatrix(M,rows,cols[j]));
-        Include(~weights[w+1],s);
-    end for;
-    return weights;
-end function;
-
 //check for MDS subcodes of dimension nu of a code C
 function subcode_explorer(C,nu)
     q := #Alphabet(C);
@@ -107,16 +115,17 @@ function subcode_explorer(C,nu)
             Exclude(~W,a*x);
         end for;
     end while;
-    #generators;
-    set_nu := SetToIndexedSet(Subsets( generators , nu));
-    x := #set_nu;
+    gen_sets := Subsets( generators , nu);
+    x := #gen_sets;
+    MDSlist := [];
     for i in [1..x] do
-        C1 := sub<C|set_nu[i]>;
+        ExtractRep(~gen_sets,~generators);
+        C1 := sub<C|generators>;
         if MinimumDistance(C1) eq n-nu+1 and Dimension(C1) eq nu then
-            return C1;
+            return C1;    //Append(~MDSlist,C1);
         end if;
     end for;
-    return 0;
+    return ZeroCode(GF(q),n);
 end function;
 
 //intersection of the equivalence class of C with some MDS codes in a sequence listM;
@@ -191,14 +200,121 @@ function random_MDS_meet(C,nu,code_att,gen_att)
     return mu_list, code_list;
 end function;
 
+//ranges nu in the function above from 1 to n-1 (code_att and gen_att are the same as above)
+//dim_ub (dim_lb) = upper (lower) bound on dimension nu, <=Length(C)-1 (>=1)
+function list_MDS_meet(C,code_att,gen_att,dim_lb,dim_ub)
+    mu_record := [];
+    codes := [];
+    for nu in [dim_lb..dim_ub] do     
+        nu;                               
+        mu_list, code_list := random_MDS_meet(C,nu,code_att,gen_att);
+        Append(~mu_record,mu_list);
+        Append(~codes,code_list);
+        nu;                               
+    end for;
+    mu_list := [];
+    witness_codes := [];
+    for r in [1..Dimension(C)] do
+        r;
+        [mu_record[l][r] : l in [1..#mu_record]];
+        mu_r, pos := Minimum([mu_record[l][r] : l in [1..#mu_record]]);
+        mu_r;
+        Append(~mu_list,mu_r);
+        Append(~witness_codes,codes[pos][r]);
+    end for;
+    return mu_list,witness_codes;
+end function;
+
+//C is a code, code_att=# of MDS generations per dimension, gen_att=# of attempts allowed to generate an MDS code
+function MDSweight2(C,code_att,gen_att,lb,ub)
+    n := Length(C);
+    q := #Alphabet(C);
+    kC := Dimension(C);
+    D := Dual(C);
+    kD := n - kC;
+
+    muC := [[i,n-kC+i] : i in [0..kC]];
+    muD := [[i,n-kD+i] : i in [0..kD]];
+
+    
+end function;
+//alternative defs
+//computes the weights defined as mu_r(C)=min{s : for every support S of cardinality S, rk(G(C)_S)>=r}
+//input is a code (not its gen.matrix)
+function MDSweight1(C)
+    n := Length(C);
+    k := Dimension(C);
+    M := GeneratorMatrix(C);
+    weights := [{i} : i in [0..k]];
+    rows := [i : i in [1..k]];
+    cols := Prune(Reverse(AllSequences(n)));    //Prune(Reverse()) is just to take the empty list out
+    for j in [1..#cols] do
+        s := #cols[j];
+        w := Rank(Submatrix(M,rows,cols[j]));
+        Include(~weights[w+1],s);
+    end for;
+    return weights;
+end function;
+
+//random extension of codes to find non MDS codes with 2 coinciding weights mu_r (ideally C is a non-nestable MDS code)
+function randomext(C,attempts)
+    n := Length(C);
+    q := #Alphabet(C);
+    k := Dimension(C);
+    G := GeneratorMatrix(C);
+    switch := 0;
+    counter := 0;
+    att_codes := [];
+    Target := ZeroCode(GF(q),n);
+    while switch eq 0 and counter lt attempts do
+        G1 := VerticalJoin(G,Matrix([[Random(GF(q)) : i in [1..n]]]));
+            if Rank(G1) eq k+1 and G1 notin att_codes then
+                Append(~att_codes,G1);
+                counter := counter + 1;
+                Cext := LinearCode(G1);
+                D := subcode_explorer(Cext,k-1);
+                if D eq ZeroCode(GF(q),n) then
+                    Target := Cext;
+                    switch := 1;
+                end if;
+            end if;
+    end while;
+    return Target;
+end function;
+
+//generates t random subcodes of dimension r of C
+function somesubcodes(C,r,t)
+    K := Alphabet(C);
+    k := Dimension(C);
+    spaces_list := [];
+    G := GeneratorMatrix(C);
+    subc_list := [];
+    for i in [1..t] do
+        S := RandomMatrix(K,r,k);
+        RowS := RowSpace(S);
+        while Rank(S) ne r or RowS in spaces_list do
+            S := RandomMatrix(K,r,k);
+            RowS := RowSpace(S);
+        end while;
+        Append(~subc_list,S);
+        Append(~spaces_list,RowS);
+    end for;
+    return subc_list,[LinearCode(subc_list[i]*G) : i in [1..t]];
+end function;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //examples
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//q := 5;
-//n := q+1;      //for n =q+1, q>=k, all MDS codes are equivalent to an extended RS
+//q := 11;
+//n := 8;      //for n =q+1, q>=k, all MDS codes are equivalent to an extended RS
 //k := 4;
 
 //C := RandomLinearCode(GF(q),n,k);
+
+//random meets
+//list_MDS_meet(C,100,1000,1,n-1);
+
+//extended RS invariant
 //listM := [ext_RS(q,j) : j in [1..n-1]];
 //mu, witness_codes, witness_scale, witness_perm := equiv_meet2(C,listM);
 //sanity check
