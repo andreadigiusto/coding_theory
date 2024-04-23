@@ -33,7 +33,7 @@ function gen_prod(v,M)
     return M;
 end function;
 
-//computes the Schur product of two linear codes by computing the products of the generators and generating the code
+//computes the Schur product (component-wise product) of two linear codes by computing the products of the generators and generating the code
 function Schur_prod(A,B)
     n := Length(A);
     K := Alphabet(A);
@@ -102,6 +102,28 @@ function findA(B,t,dim,attempts)
     print("did not find a pair");
     return A,C;
 end function;
+
+//generalised tensor product constructor from two lists of matrices
+function gen_tens(l1,l2)
+    
+end function;
+
+//GTP construction (from Imai,Fujiya)
+K<a> := GF(2^4);
+H1 := <>;
+Append(~H1, Matrix(GF(2) , [[1 : i in [0..14]]]));
+Append(~H1, Transpose( Matrix(GF(2) , [ElementToSequence(a^i) : i in [0..14]] ) ));
+Append(~H1, Transpose( Matrix(GF(2) , [ElementToSequence(a^(3*i)) : i in [0..14]] ) ));
+Append(~H1, Transpose( Matrix(GF(2) , [ElementToSequence(a^(5*i)) : i in [0..14]] ) ));
+H2 := <>;
+Append(~H2, Matrix(GF(2),[[1,1,0,0,0,0,0,0],[1,0,1,0,0,0,0,0],[1,0,0,1,0,0,0,0],[1,0,0,0,1,0,0,0],[1,0,0,0,0,1,0,0],[1,0,0,0,0,0,1,0],[1,0,0,0,0,0,0,1]]));
+Append(~H2, Matrix(GF(2),[[1,1,1,0,1,0,0,0],[0,1,1,1,0,1,0,0],[1,1,0,1,0,0,1,0],[1,1,1,1,1,1,1,1]]));
+Append(~H2, Matrix(GF(2),[[1,1,1,1,1,1,1,1]]));
+Append(~H2, Matrix(GF(2),[[1,1,1,1,1,1,1,1]]));
+H := VerticalJoin(<TensorProduct(H2[i],H1[i]) : i in [1..4]>);
+C := Dual(LinearCode(H));
+
+
 
 //experiment for augmenting codes
 switch := 0;

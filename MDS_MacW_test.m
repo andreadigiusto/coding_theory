@@ -187,6 +187,19 @@ function MDSWeight(i,k,n,q)
     return weight;
 end function;
 
+function MDSWeight_Alb(i,k,n,q)
+    d := n-k+1;
+    weight := 0;
+    for t in [0..d-1] do
+        weight := weight + (-1)^(i-t) * Binomial(n,i) * Binomial(i,t);
+    end for;
+    for t in [d..i] do
+        weight := weight + (-1)^(i-t) * Binomial(n,i) * Binomial(i,t) * q^(t-d+1);
+    end for;
+    return weight;
+end function;
+
+
 //computes the size of the hamming ball of radius r = n
 function Hball_size(r,n,q)
     ball := 1;
