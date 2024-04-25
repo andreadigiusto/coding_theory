@@ -103,6 +103,30 @@ function findA(B,t,dim,attempts)
     return A,C;
 end function;
 
+//a test to find an error corr pair for the split channel
+function f1(B,A,attempts)
+    K := Alphabet(A);
+    n := Length(A);
+    S := AutomorphismGroup(UniverseCode(K,n));
+    t := n - MinimumDistance(A);
+    C1 := ZeroCode(K,n);
+    d1 := n;
+    for i in [1..attempts] do
+        x := Random(S);
+        Ax := A^x;
+        C := Dual(Schur_prod(Ax,B));
+        d := MinimumDistance(C);
+        if d lt d1 then
+            C1 := C;
+            d1 := d;
+            print("success!");
+        end if;
+    end for;
+    return C1;
+end function;
+
+//find a subcode that we like
+
 //generalised tensor product constructor from two lists of matrices
 function gen_tens(l1,l2)
     
