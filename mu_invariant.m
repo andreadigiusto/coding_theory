@@ -98,6 +98,19 @@ function ext_RS(q,k)
     return LinearCode( HorizontalJoin( Matrix([[(GF(q)!i)^j : i in [0..q-1]] : j in [0..k-1]]) , Transpose(Matrix([[GF(q)!0 : i in [1..k-1]] cat [GF(q)!1]])) ) );
 end function;
 
+//builds a code according to the procedure described in "More MDS codes of non-Reed-Solomon type"
+//C2 has length n+3, with dimension 3<=k<=n-1
+//a = [a1,...,an] and ai,delta,tau,pi in GF(q)
+function C2_constr(k,q,a,delta,tau,pi)
+    K := GF(q)
+    n := #a;
+    B1 := Matrix(K,[[a[j]^i : j in [1..n]] : i in [0..k-1]]);
+    B2 := Transpose(Matrix(K,[[0 : i in [1..k-1]] cat [1],[0 : i in [1..k-2]] cat [1,delta],[0 : i in [1..k-3]] cat [1,tau,pi]]));
+    G := HorizontalJoin(B1,B2);
+    C := LinearCode(G);
+    return C;
+end function;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //specific purpose code
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
