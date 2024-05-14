@@ -102,7 +102,7 @@ end function;
 //C2 has length n+3, with dimension 3<=k<=n-1
 //a = [a1,...,an] and ai,delta,tau,pi in GF(q)
 function C2_constr(k,q,a,delta,tau,pi)
-    K := GF(q)
+    K := GF(q);
     n := #a;
     B1 := Matrix(K,[[a[j]^i : j in [1..n]] : i in [0..k-1]]);
     B2 := Transpose(Matrix(K,[[0 : i in [1..k-1]] cat [1],[0 : i in [1..k-2]] cat [1,delta],[0 : i in [1..k-3]] cat [1,tau,pi]]));
