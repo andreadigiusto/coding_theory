@@ -315,6 +315,17 @@ function somesubcodes(C,r,t)
     return subc_list,[LinearCode(subc_list[i]*G) : i in [1..t]];
 end function;
 
+//duality: kperp := Dimension(Dual(C)), mu = [mu_r(C) : r in [1..Dimension(C)]] 
+function beta_C(kperp,mu)
+    return [ kperp+r-mu[r] : r in [1..#mu] ];
+end function;
+
+//computes the sum of corresponding weights of C and Dual(C) under the correspondence given by beta_C
+function duality(mu,mu_perp)
+    l := beta_C(#mu_perp,mu);
+    return [mu[r]+mu_perp[l[r]] : r in [1..#mu]];
+end function;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //examples
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
