@@ -213,6 +213,26 @@ function random_MDS_meet(C,nu,code_att,gen_att)
     return mu_list, code_list;
 end function;
 
+//computes 
+function random_equiv_meet(C,M,attempts,input_list)
+    n := Length(C);
+    k := Dimension(C);
+    q := #Alphabet(C);
+    A := AutomorphismGroup(UniverseCode(GF(q),n));
+    AM := AutomorphismGroup(M);
+    aut := [];
+    for i in [1..attempts] do
+        t := Random(A);
+        if t notin AM and t notin aut and t notin input_list then
+            Append(~aut,t);
+        end if;
+    end for;
+    princt("chek");
+    for i in [1..attempts]
+    r,witness := Maximum([Dimension(M^t meet C) : t in aut]);
+    return r,witness,aut;
+end function;
+
 //ranges nu in the function above from 1 to n-1 (code_att and gen_att are the same as above)
 //dim_ub (dim_lb) = upper (lower) bound on dimension nu, <=Length(C)-1 (>=1)
 function list_MDS_meet(C,code_att,gen_att,dim_lb,dim_ub)
