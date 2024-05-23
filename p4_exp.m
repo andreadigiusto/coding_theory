@@ -54,6 +54,11 @@ end function;
 // specific purpose code
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//test for bounds (l,a are lists of test values)
+function submul_h(q,l,a)
+    return [H(q,a*x)-2*a*H(q,2*x) : x in l];
+end function;
+
 //computes the ratio of the size of the error set of the split channel with random errors of weights up to w1,w2 to the ball of radius w=w1+w2
 //w2<w1 is assumed; the total length is 2n
 function Err_ratio(w1,w2,n,q)
