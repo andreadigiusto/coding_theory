@@ -335,6 +335,30 @@ function somesubcodes(C,r,t)
     return subc_list,[LinearCode(subc_list[i]*G) : i in [1..t]];
 end function;
 
+//finds equivalence classes in a list of codes, bruteforce
+function equiv_in_list(list)
+    codes := [];
+    while list ne [] do
+        C := Representative(list);
+        Append(~codes,C);
+        list1 := [];
+        for i in [1..#list] do
+            if IsEquivalent(C,list[i]) eq false then
+                Append(~list1,list[i]);
+            end if;
+        end for;
+        list := list1;
+    end while;
+    return codes;
+end function;
+
+//brute force tries to augment a subcode D of C to an MDS code of target dimension nu using vectors outside C
+function extend_to_MDS(D,C)
+
+end function;
+
+//brute force checking for MDS sovracodes
+
 //duality: kperp := Dimension(Dual(C)), mu = [mu_r(C) : r in [1..Dimension(C)]] 
 function beta_C(kperp,mu)
     return [ kperp+r-mu[r] : r in [1..#mu] ];
