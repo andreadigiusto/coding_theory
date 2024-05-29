@@ -112,9 +112,9 @@ C := LinearCode(GC);
 
 M1 := LinearCode( Matrix(GF(7),[[1,2,1,2]])*GC );
 M2 := LinearCode(Matrix(GF(7),[[1,0,3,4,5,2,6,5],[0,1,4,4,6,4,2,1]]));
-M3 := ZeroCode(K,8);
-M4 := ext_RS(q,5);
-muC := [1,2,0,5];
+M3 := ext_RS(q,5);
+M4 := M3;
+muC := [1,2,5,5];
 McodesC := [M1,M2,M3,M4];
 
 D := Dual(C);
@@ -139,7 +139,8 @@ if false then
     sub<D|N3>;
     sub<N4|D>;
 end if;
-//brute force checking that there is no 4dimensional MDS code intersecting C in dim 3
+    //brute force checking that there is no 4dimensional MDS code intersecting C in dim 3
+    // if such a codes existed, then the intersection would be a subcode of C that is equivalent to a subcode of dimension 3 of ext_RS(q,4)
 l1,l2 := somesubcodes(C,3,binom(k,3,q));        //generates all the subcodes of C od dimension 3
 noneq := equiv_in_list(l2);                     //then only keeps nonequivalent ones
 
@@ -155,7 +156,7 @@ cand := [noneq[i] : i in ind];      //sanity check: #cand:=34
 //option 2: a code in cand has the desired MDS ext iff it is equivalent to a 3 dimensional subcode of the ext_RS of dimension 4
 M := ext_RS(q,4);
 m1,m2 := somesubcodes(M,3,binom(k,3,q));        //generates all the subcodes of M od dimension 3
-m_noneq := equiv_in_list(m2);                     //then only keeps nonequivalent ones; sanity check: #m_noneq=3
+m_noneq := equiv_in_list(m2);                     //then only keeps nonequivalent ones; sanity check: #m_noneq=5
 for i in [1..#m_noneq] do
     i;
     for j in [1..#cand] do

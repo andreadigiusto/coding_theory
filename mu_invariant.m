@@ -80,6 +80,32 @@ function AllSequences(n)
     return list;
 end function;
 
+//generates distinct subsets of {1..n} with exactly nu elements
+function extend_seq(s,n)
+    l := #s;
+    extensions := [];
+    for i in [s[l]+1..n] do
+        Append(~extensions , s cat [i]);
+    end for;
+    return extensions;
+end function;
+
+function iteration_seq(seq,n)
+    iterated := [];
+    for x in seq do
+        iterated := iterated cat extend_seq(x,n);
+    end for;
+    return iterated;
+end function;
+
+function AllSequences_nu(n,nu)
+    seq := [[i] : i in [1..n]];
+    for i in [2..nu] do
+        seq := iteration_seq(seq,n);
+    end for;
+    return seq;
+end function;
+
 //brute force samples a random MDS code of params n, k ,q (attempts is the number of tries before spitting the universe code)
 function random_MDS(q,n,k,attempts)
     U := UniverseCode(GF(q),n);
@@ -369,6 +395,31 @@ function duality(mu,mu_perp)
     l := beta_C(#mu_perp,mu);
     return [mu[r]+mu_perp[l[r]] : r in [1..#mu]];
 end function;
+
+//////////////////////////////////////////////////////////////////////////////////////////////
+//variant nu:= min {s : every s coordinates contain an information set of C}, extended to nu_r(C) by taking the minimum nu(D) over all subcodes
+//input is a generator matrix of a code
+function nu(G)
+    n := NumberOfColumns(G);
+    k := NumberOfRows(G);
+    list := AllSequences_nu(n,k);
+    for j in [k..n-1] do
+        for x in list do
+            l := Rank(Submatrix(G,[1..k],x));
+            switch := 0;
+            if l lt k then
+                switch := 1;
+                break;
+            end if;
+        end for;
+        if switch eq 0 then
+            return j;
+        end if;
+        list := iteration_seq(list,n);
+    end for;
+    return n;
+end function;
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //examples
