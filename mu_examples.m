@@ -185,6 +185,7 @@ end for;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //example 2
+    //missing muC[3]
 q := 7;
 K := GF(q);
 n := q+1; 
@@ -208,3 +209,62 @@ N2 := M4;       //checked via subcode_explorer, then equivalent subcode procedur
 N3 := M4;
 
 M5 := Dual(N1);
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //example 3: sum of two MDS codes
+q := 7;
+K := GF(q);
+n := q+1;
+M3 := ext_RS(q,3);
+M4 := ext_RS(q,4);
+C := M3 + M4;
+
+M1 := LinearCode(Matrix(K,[[1,3,2,6,2,5,2,2]]));
+M2 := subcode_explorer(M4,2);
+M5 := UniverseCode(K,n);        //because MinimumDistance(C) eq 1;
+
+muC := [1,2,3,4,8];
+
+D := Dual(C);       //obs : muC[5] eq 8 => muD[i] ne i for all i
+
+N1 := D meet M2;
+N2 := D meet M3;
+N3 := M4;
+
+muD := [2,3,4]
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //example 4: the one showing inequivalence with Elisa's invariant
+q := 7;
+K := GF(q);
+n := q+1;
+RS3 := ext_RS(q,3);
+RS4 := ext_RS(q,4);
+GC := Matrix(K,[[1,0,6,1,2,5,6,4],[0,1,2,3,4,5,6,0]]);
+C := LinearCode(GC);
+M1 := LinearCode((Vector([1,1,])*GD));
+M2 := RS4;
+McodeC := [M1,M2]
+muC := [1,4];
+//check that C is not a two dimensional subcode of a 3 dim MDS
+m1,m2 := somesubcodes(RS3,2,binom(3,2,q));        //generates all the subcodes of RS3 od dimension 3
+m_noneq := equiv_in_list(m2); 
+for i in [1..#m_noneq] do
+    if IsEquivalent(m_noneq[i],C) then
+        i;
+        break;
+    end if;
+end for;
+
+D := Dual(C);
+
+N2 := subcode_explorer(RS4,2);
+N3 := RS3;          //not actually RS3, but an equivalent; can be checked by finding that C is a subcode of something equiv to ext_RS(q,5)
+                    //M52 := LinearCode(Matrix(K,[[1,0,6,3,2,6,3,2],[0,1,6,3,4,3,4,1]]));
+                    //IsEquivalent(C,M52);
+N4 := RS4;
+N5 := ext_RS(q,6);      //or something equiv; check via subcodes, long but not unfeasible
+N6 := Dual(M1);
+muD := [1,2,3,4,6,7]

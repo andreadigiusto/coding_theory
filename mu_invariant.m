@@ -253,9 +253,10 @@ function random_equiv_meet(C,M,attempts,input_list)
             Append(~aut,t);
         end if;
     end for;
-    princt("chek");
-    for i in [1..attempts]
-    r,witness := Maximum([Dimension(M^t meet C) : t in aut]);
+    print("chek");
+    for i in [1..attempts] do
+        r,witness := Maximum([Dimension(M^t meet C) : t in aut]);
+    end for;
     return r,witness,aut;
 end function;
 
