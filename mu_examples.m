@@ -102,6 +102,8 @@ end function;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //example 1: notice muC[3] is still unknown, either 4 or 5
+            if false then
+
 q := 7;
 K := GF(q);
 n := q+1;     //!! every MDS is extended RS
@@ -128,7 +130,7 @@ muD := [1,3,3,6];       //these weights are sure! proving duality would imply mu
 McodesD := [N1,N2,N3,N4];
 
 //checks
-if false then
+
     sub<C|M1>;
     sub<C|M2>;
     subcode_explorer(C,3);      //returns 0 cause there are no MDS subcodes of dimension 3 in C (already takes some seconds: need a more efficient way!)
@@ -138,10 +140,10 @@ if false then
     subcode_explorer(D,2);      //returns 0 cause there are no MDS subcodes of dimension 2 in D
     sub<D|N3>;
     sub<N4|D>;
-end if;
+
     //brute force checking that there is no 4dimensional MDS code intersecting C in dim 3
     // if such a codes existed, then the intersection would be a subcode of C that is equivalent to a subcode of dimension 3 of ext_RS(q,4)
-l1,l2 := somesubcodes(C,3,binom(k,3,q));        //generates all the subcodes of C od dimension 3
+l1,l2 := somesubcodes(C,3,binom(Dimension(C),3,q));        //generates all the subcodes of C od dimension 3
 noneq := equiv_in_list(l2);                     //then only keeps nonequivalent ones
 
     //to be subcode of an MDS of dimension 4, the minimum distance should be at least 5
@@ -161,7 +163,7 @@ for i in [1..#m_noneq] do
     i;
     for j in [1..#cand] do
         if IsEquivalent(m_noneq[i],cand[j]) then
-            D := cand[j];
+            W := cand[j];
             subM := m_noneq[i];
             break;
         end if;
@@ -169,16 +171,40 @@ for i in [1..#m_noneq] do
 end for;
 
 //option 2: a code in cand has the desired MDS ext iff its dual has an MDS subcode of codimension 1
-if false then
-    for i in [1..#cand] do
-        i;
-        E := Dual(cand[i]);
-        F := subcode_explorer(E,4);
-        if F ne ZeroCode(K,n) then
-            print("found the witness for mu_3=4");
-            W := Dual(F);
-            W;
-        end if;
-    end for;
-end if;
+for i in [1..#cand] do
+    i;
+    E := Dual(cand[i]);
+    F := subcode_explorer(E,4);
+    if F ne ZeroCode(K,n) then
+        print("found the witness for mu_3=4");
+        W := Dual(F);
+        W;
+    end if;
+end for;
+            end if;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    //example 2
+q := 7;
+K := GF(q);
+n := q+1; 
+M4 := ext_RS(q,4);
+GM4 := GeneratorMatrix(M4);                         
+R := Matrix(GF(7),[[1,0,1,2,3,6,7,8]]);
+C := LinearCode(VerticalJoin(GM4,R));    
+GC := GeneratorMatrix(C);
+
+M1 := LinearCode( Matrix(GF(7),[[1,1,1,1,2]])*GC );
+M2 := subcode_explorer(M4,2);
+//M3 :=
+//M4 defined above (obs: it is self dual!)
+muC := [1,2,0,4,7];
+
+D := Dual(C);
+GD := GeneratorMatrix(D);
+
+N1 := LinearCode( Matrix(GF(7),[[1,2,1]])*GD );
+N2 := M4;       //checked via subcode_explorer, then equivalent subcode procedure to chek subcodes of dimension 2 of M3
+N3 := M4;
+
+M5 := Dual(N1);
