@@ -54,6 +54,32 @@ function subcode_explorer(C,nu)
     return ZeroCode(GF(q),n);
 end function;
 
+//generates all subcodes of dimension r: only use for SMALL PARAMETERS
+function allsubcodes(C,r)
+    q := #Alphabet(C);
+    n := Length(C);
+    generators := {};
+    W := WordsOfBoundedWeight(C,1,n);
+    while W ne {} do
+        x := Representative(W);
+        Include(~generators,x);
+        for a in [0..q-1] do
+            Exclude(~W,a*x);
+        end for;
+    end while;
+    gen_sets := Subsets( generators , r);
+    x := #gen_sets;
+    subc_list := [];
+    for i in [1..x] do
+        ExtractRep(~gen_sets,~generators);
+        C1 := sub<C|generators>;
+        if C1 notin subc_list then
+            Append(~subc_list,C1);
+        end if;
+    end for;
+    return subc_list;
+end function;
+
 //generates t random subcodes of dimension r of C
 function somesubcodes(C,r,t)
     K := Alphabet(C);
