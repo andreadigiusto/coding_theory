@@ -54,10 +54,6 @@ end function;
 // specific purpose code
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//test for bounds (l,a are lists of test values)
-function submul_h(q,l,a)
-    return [H(q,a*x)-2*a*H(q,2*x) : x in l];
-end function;
 
 //computes the ratio of the size of the error set of the split channel with random errors of weights up to w1,w2 to the ball of radius w=w1+w2
 //w2<w1 is assumed; the total length is 2n
@@ -71,6 +67,16 @@ end function;
 function diffSet_ratio(w1,w2,n,q)
     diffSet_size := Hball_size(2*w2,n,q)^2 + 2 * Hball_size(2*w2,n,q) * (Hball_size(2*w1,n,q) - Hball_size(2*w2,n,q)) + (Hball_size(w1+w2,n,q) - Hball_size(2*w2,n,q))^2;
     return RealField(3)!(diffSet_size/Hball_size(2*(w1+w2),2*n,q));
+end function;
+
+//upper bound on size of split difference set (for GV bound): a=block length, b=number of blocks, c=max corrupted blocks, w=max errors per block
+function Split_diff_set(q,a,b,c,w)
+    return &+[ (Binomial(b,j)*Binomial(b-j,2*(c-j))*(Hball_size(2*w,a,q)^j)*(Hball_size(w,a,q)^(2*(c-j)))) : j in [0..c]];
+end function;
+
+//computes asymptotic split GV bound, compares to standard GV (positive difference = advantage)
+function split_GV()
+
 end function;
 
 //computes the tensor code C1 \otimes C2 (via pcm)
@@ -128,13 +134,6 @@ function f1(B,A,attempts)
         end if;
     end for;
     return C1;
-end function;
-
-//find a subcode that we like
-
-//generalised tensor product constructor from two lists of matrices
-function gen_tens(l1,l2)
-    
 end function;
 
 //GTP construction (from Imai,Fujiya)
