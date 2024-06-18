@@ -270,9 +270,9 @@ RS3 := ext_RS(q,3);
 RS4 := ext_RS(q,4);
 GC := Matrix(K,[[1,0,6,1,2,5,6,4],[0,1,2,3,4,5,6,0]]);
 C := LinearCode(GC);
-M1 := LinearCode((Vector([1,1,])*GD));
+M1 := LinearCode((Vector([1,1])*GC));
 M2 := RS4;
-McodeC := [M1,M2]
+McodeC := [M1,M2];
 muC := [1,4];
 //check that C is not a two dimensional subcode of a 3 dim MDS
 m1,m2 := somesubcodes(RS3,2,binom(3,2,q));        //generates all the subcodes of RS3 od dimension 3
@@ -293,4 +293,4 @@ N3 := RS3;          //not actually RS3, but an equivalent; can be checked by fin
 N4 := RS4;
 N5 := ext_RS(q,6);      //or something equiv; check via subcodes, long but not unfeasible
 N6 := Dual(M1);
-muD := [1,2,3,4,6,7]
+muD := [1,2,3,4,6,7];
