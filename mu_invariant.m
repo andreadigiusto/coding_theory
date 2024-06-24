@@ -379,12 +379,6 @@ function equiv_in_list(list)
     return codes;
 end function;
 
-//brute force tries to augment a subcode D of C to an MDS code of target dimension nu using vectors outside C
-function extend_to_MDS(D,C)
-
-end function;
-
-//brute force checking for MDS sovracodes
 
 //duality: kperp := Dimension(Dual(C)), mu = [mu_r(C) : r in [1..Dimension(C)]] 
 function beta_C(kperp,mu)
@@ -421,6 +415,20 @@ function nu(G)
     return n;
 end function;
 
+//alternative invariant: find the largest anticode with intersection bounded from above with C, hence max{dim(A) : dim(A \meet C)\geq k-r}
+function antic_inv(C)
+    n := Length(C);
+    k := Dimension(C);
+    supp := [[i] : i in [1..n]];
+    list := [Dimension(ShortenCode(C,Seqset(supp[j]))) : j in [1..#supp]];
+    inv_list := [ [n , k , k] , [n-1 , Minimum(list) , Maximum(list)] ];
+    for i in [2..n-1] do
+        supp := iteration_seq(supp,n);
+        list := [Dimension(ShortenCode(C,Seqset(supp[j]))) : j in [1..#supp]];
+        inv_list := inv_list cat [ [n-i , Minimum(list) , Maximum(list)] ];
+    end for;
+    return Reverse(inv_list);
+end function;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //examples
