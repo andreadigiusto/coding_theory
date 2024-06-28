@@ -430,6 +430,36 @@ function antic_inv(C)
     return Reverse(inv_list);
 end function;
 
+//alternative def involving support distribution (from the knowledge of the dimension of the shortenings of an MDS code)
+function supp_distr(C);
+    n := Length(C);
+    k := Dimension(C);
+    supp := [[i] : i in [1..n]];
+    list := [Dimension(ShortenCode(C,Seqset(supp[j]))log;) : j in [1..#supp]];
+    distr := [[k],list];
+    inv_list := [ [n , k] , [n-1 , Minimum(list)] ];
+    for i in [2..n-1] do
+        supp := iteration_seq(supp,n);
+        list := [Dimension(ShortenCode(C,Seqset(supp[j]))) : j in [1..#supp]];
+        Append(~distr,list);
+        inv_list := inv_list cat [ [n-i , Minimum(list)] ];
+    end for;
+        return Reverse(inv_list), Reverse(distr);
+end function;
+
+//direct complement builder with C1 subcode of C2
+function dir_sum(C1,C2)
+    n := Length(C1);
+    q := #Alphabet(C1);
+    k1 := Dimension(C1);
+    k2 := Dimension(C2);
+    V := VectorSpace(GF(q),n);
+    VC1 := sub<V|Basis(C1)>;    
+    VC2 := sub<V|Basis(C2)>;
+    list := ExtendBasis(Basis(VC1),VC2);
+    return LinearCode<GF(q),n | [list[i] : i in [k1+1..k2]]>;
+end function;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //examples
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
