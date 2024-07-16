@@ -58,6 +58,10 @@ end function;
 function allsubcodes(C,r)
     q := #Alphabet(C);
     n := Length(C);
+    k := Dimension(C);
+    if k eq r then
+        return [C];
+    end if;
     generators := {};
     W := WordsOfBoundedWeight(C,1,n);
     while W ne {} do
@@ -121,6 +125,53 @@ end function;
 function ext_RS(q,k)
     n := q+1;
     return LinearCode( HorizontalJoin( Matrix([[(GF(q)!i)^j : i in [0..q-1]] : j in [0..k-1]]) , Transpose(Matrix([[GF(q)!0 : i in [1..k-1]] cat [GF(q)!1]])) ) );
+end function;
+
+//computes the list of all nonequivalent subcodes of all dimensions (in a somehow smarter way goddammit)
+function sub_codim_1(C)
+    n := Length(C);
+    k := Dimension(C);
+    q := #Alphabet(C);
+    if k eq 1 then
+        return [ZeroCode(GF(q),n)]; 
+    end if;
+    a,list := somesubcodes(C,k-1,binom(k,k-1,q));
+    return equiv_in_list(list);
+end function;
+
+function all_sub(C)
+    n := Length(C);
+    k := Dimension(C);
+    q := #Alphabet(C);
+    list := [C];
+    LIST := [list];
+    for i in [2..k] do
+        list := equiv_in_list(&cat[sub_codim_1(list[i]) : i in [1..#list]]);
+        Append(~LIST,list);
+    end for;
+    //Append(~LIST,[ZeroCode(GF(q),n)]);
+    return Reverse(LIST);
+end function;
+
+function list_match(l1,l2)
+    for i in [1..#l1] do
+        for j in [1..#l2] do
+            if IsEquivalent(l1[i],l2[j]) then
+                return [l1[i],l2[j]];
+            end if;
+        end for;
+    end for;
+    return 0;
+end function;
+
+function structure_match(listC,listM)
+    mu := #listM;
+    l := Minimum(#listC,#listM);
+    matches := [];
+    for i in [1..l] do
+        Append(~matches,list_match(listC[i],listM[i]));
+    end for;
+    return matches;
 end function;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

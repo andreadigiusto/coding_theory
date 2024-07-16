@@ -379,6 +379,32 @@ function equiv_in_list(list)
     return codes;
 end function;
 
+//generates all subcodes of dimension r: only use for SMALL PARAMETERS
+function allsubcodes(C,r)
+    q := #Alphabet(C);
+    n := Length(C);
+    generators := {};
+    W := WordsOfBoundedWeight(C,1,n);
+    while W ne {} do
+        x := Representative(W);
+        Include(~generators,x);
+        for a in [0..q-1] do
+            Exclude(~W,a*x);
+        end for;
+    end while;
+    gen_sets := Subsets( generators , r);
+    x := #gen_sets;
+    subc_list := [];
+    for i in [1..x] do
+        ExtractRep(~gen_sets,~generators);
+        C1 := sub<C|generators>;
+        if C1 notin subc_list then
+            Append(~subc_list,C1);
+        end if;
+    end for;
+    return subc_list;
+end function;
+
 
 //duality: kperp := Dimension(Dual(C)), mu = [mu_r(C) : r in [1..Dimension(C)]] 
 function beta_C(kperp,mu)
@@ -458,6 +484,18 @@ function dir_sum(C1,C2)
     VC2 := sub<V|Basis(C2)>;
     list := ExtendBasis(Basis(VC1),VC2);
     return LinearCode<GF(q),n | [list[i] : i in [k1+1..k2]]>;
+end function;
+
+//computes the list of all nonequivalent subcodes of all dimensions (in a somehow smarter way goddammit)
+function sub_codim_1(C)
+    n := Length(C);
+    k := Dimension(C);
+    q := #Alphabet(C);
+    if k eq 1 then
+        return ZeroCode(GF(q),n); 
+    end if;
+    list := allsubcodes(C,k-1);
+    return equiv_in_list(list);
 end function;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
