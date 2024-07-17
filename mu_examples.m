@@ -154,6 +154,8 @@ function all_sub(C)
 end function;
 
 function list_match(l1,l2)
+    n := Length(l1[1]);
+    q := #Alphabet(l1[1]);
     for i in [1..#l1] do
         for j in [1..#l2] do
             if IsEquivalent(l1[i],l2[j]) then
@@ -161,10 +163,10 @@ function list_match(l1,l2)
             end if;
         end for;
     end for;
-    return 0;
+    return [ZeroCode(GF(q),n),ZeroCode(GF(q),n)];
 end function;
 
-function structure_match(listC,listM)
+function str_match(listC,listM)
     mu := #listM;
     l := Minimum(#listC,#listM);
     matches := [];
