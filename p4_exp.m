@@ -54,6 +54,14 @@ end function;
 // specific purpose code
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+//computes the size of the error set; a=block length,b=#blocks,c=#err.block,w=errors per block
+function split_ratio(q,a,b,c,w)
+    RealField(5)!(&+[Binomial(a,j)*(q-1)^j : j in [1..w]]/q^(a*H(q,w/a)));
+    exact := &+[ Binomial(b,i) * (&+[Binomial(a,j)*(q-1)^j : j in [1..w]])^i : i in [1..c]];
+    appr1 := &+[Binomial(b,i) * (q^(a*H(q,w/a)))^i : i in [1..c]];
+    appr2 := q^(a*c*H(q,w/a)+Log(2,q)*b*H(2,c/b));
+    return RealField(5)!(exact/appr1),RealField(5)!(exact/appr2),RealField(5)!(appr1/appr2);
+end function;
 
 //computes the ratio of the size of the error set of the split channel with random errors of weights up to w1,w2 to the ball of radius w=w1+w2
 //w2<w1 is assumed; the total length is 2n
