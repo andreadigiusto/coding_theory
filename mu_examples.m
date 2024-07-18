@@ -154,6 +154,8 @@ function all_sub(C)
 end function;
 
 function list_match(l1,l2)
+    n := Length(l1[1]);
+    q := #Alphabet(l1[1]);
     for i in [1..#l1] do
         for j in [1..#l2] do
             if IsEquivalent(l1[i],l2[j]) then
@@ -161,17 +163,33 @@ function list_match(l1,l2)
             end if;
         end for;
     end for;
-    return 0;
+    return [ZeroCode(GF(q),n),ZeroCode(GF(q),n)];
 end function;
 
-function structure_match(listC,listM)
+function str_match(listC,listM)
     mu := #listM;
     l := Minimum(#listC,#listM);
     matches := [];
     for i in [1..l] do
         Append(~matches,list_match(listC[i],listM[i]));
     end for;
-    return matches;
+    return [[Dimension(matches[i,1]),mu] : i in [1..#matches]];
+end function;
+
+function mu_lookup(listC,allM)
+    k := #listC;
+    m := #allM;
+    matches := [str_match(listC,allM[i]) : i in [1..m]];
+    mu := [0 : i in [1..k]];
+    for i in [1..k] do
+        for j in [i..m] do
+            if matches[j,i,1] ne 0 then
+                mu[i] := matches[j,i,2];
+                break;
+            end if;
+        end for;
+    end for;
+    return mu;
 end function;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -258,7 +276,7 @@ for i in [1..#cand] do
         W;
     end if;
 end for;
-            end if;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     //example 2
@@ -309,7 +327,7 @@ N1 := D meet M2;
 N2 := D meet M3;
 N3 := M4;
 
-muD := [2,3,4]
+muD := [2,3,4];
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -347,3 +365,5 @@ N6 := Dual(M1);
 muD := [1,2,3,4,6,7];
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        end if;
