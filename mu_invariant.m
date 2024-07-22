@@ -498,6 +498,26 @@ function sub_codim_1(C)
     return equiv_in_list(list);
 end function;
 
+//shorten a code on positions indexed by S, but keeping it embedded in F_q^n
+function embed_short(C,S)
+    n := Length(C);
+    K := Alphabet(C);
+    G := GeneratorMatrix(ShortenCode(C,S));
+    l := Rank(G);
+    j := 0;
+    list := [];
+    for i in [1..n] do
+        if i in S then
+            Append(~list,[0 : h in [1..l]]);
+            j := j+1;
+        else
+            Append(~list,[G[h,i-j] : h in [1..l]]);
+        end if;
+    end for;
+    return LinearCode(Transpose(Matrix(K,list)));
+end function;
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //examples
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
