@@ -6,28 +6,27 @@
 function binom(u,v,q);
     f:=0;
     if u le -1 or v le -1 then;
-    f:=0;
+        f:=0;
     end if;
     if v eq 0 and u ge 0 then;
-    f:=1;
+        f:=1;
     end if;
     if v ge 1 and u le v-1 then;
-    f:=0;
+        f:=0;
     end if;
     if v ge 1 and u ge v then;
-    P:=1;
-    Q:=1;
-    for i in [0..v-1] do;
-    P:=P*(q^(u-i)-1);
-    end for;
-    for i in [0..v-1] do;
-    Q:=Q*(q^(i+1)-1);
-    end for;
-    f:=P/Q;
+        P:=1;
+        Q:=1;
+        for i in [0..v-1] do;
+            P:=P*(q^(u-i)-1);
+        end for;
+        for i in [0..v-1] do;
+            Q:=Q*(q^(i+1)-1);
+        end for;
+        f:=P/Q;
     end if;
     return f;
 end function;
-
 
 //returns the Reed-Solomon code of length n=q+1 and dimension k
 function ext_RS(q,k)
@@ -59,7 +58,7 @@ end function;
 function noneq_list(list)
     codes := [];
     while list ne [] do
-        C := Representative(list);
+        C := list[1];
         Append(~codes,C);
         list1 := [];
         for i in [1..#list] do
@@ -86,6 +85,40 @@ function list_match(l1,l2)
     return [ZeroCode(GF(q),n),ZeroCode(GF(q),n)];
 end function;
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//                              sanity checks for list generation                                //
+///////////////////////////////////////////////////////////////////////////////////////////////////
+switch := 0;
+if switch eq 1 then
+
+//sanity check for somesubcodes: generates all binom(4,3,7)=400 distinct 3-dimensional subcodes of a random code C
+C := RandomLinearCode(GF(7),8,4);
+sub_list := somesubcodes(C,3,binom(4,3,7));
+for i in [1..#sub_list-1] do
+    for j in [i+1..#sub_list] do
+        if sub_list[i] eq sub_list[j] then
+            print("found two equal subcodes in the list");
+            i;
+            j;
+            break;
+        end if;
+    end for;
+end for;
+
+//sanity check for noneq_list, using sub_list generated above
+L := noneq_list(sub_list);
+for i in [1..#L-1] do
+    for j in [i+1..#L] do
+        if IsEquivalent(L[i],L[j]) then
+            print("found two equivalent subcodes");
+            i;
+            j;
+            break;
+        end if;
+    end for;
+end for;
+
+end if;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //                          codes and checks for the counterexample                              //
