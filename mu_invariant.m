@@ -475,7 +475,7 @@ function supp_distr(C);
     n := Length(C);
     k := Dimension(C);
     supp := [[i] : i in [1..n]];
-    list := [Dimension(ShortenCode(C,Seqset(supp[j]))log;) : j in [1..#supp]];
+    list := [Dimension(ShortenCode(C,Seqset(supp[j]))) : j in [1..#supp]];
     distr := [[k],list];
     inv_list := [ [n , k] , [n-1 , Minimum(list)] ];
     for i in [2..n-1] do
