@@ -169,6 +169,11 @@ end function;
 //W := [Rationals()!(Binomial(n,i)*(q-1)^i) : i in [0..n]];
 //Test(n,k,q);
 
+//computes the (i,j)th Krawchuck coefficient
+function Kraw_coeff(i,j,n,q)
+    return &+[(-1)^(j-s)*q^s*Binomial(n-i,s)*Binomial(n-s,j-s) : s in [0..n]];
+end function;
+
 //computes the i-th weight of an MDS code of dimension k, length
 function MDSWeight(i,k,n,q)
     d := n - k + 1;
