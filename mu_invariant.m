@@ -8,26 +8,40 @@
 function binom(u,v,q);
     f:=0;
     if u le -1 or v le -1 then;
-    f:=0;
+        f:=0;
     end if;
     if v eq 0 and u ge 0 then;
-    f:=1;
+        f:=1;
     end if;
     if v ge 1 and u le v-1 then;
-    f:=0;
+        f:=0;
     end if;
     if v ge 1 and u ge v then;
-    P:=1;
-    Q:=1;
-    for i in [0..v-1] do;
-    P:=P*(q^(u-i)-1);
-    end for;
-    for i in [0..v-1] do;
-    Q:=Q*(q^(i+1)-1);
-    end for;
-    f:=P/Q;
+        P:=1;
+        Q:=1;
+        for i in [0..v-1] do;
+            P:=P*(q^(u-i)-1);
+        end for;
+        for i in [0..v-1] do;
+            Q:=Q*(q^(i+1)-1);
+        end for;
+        f:=P/Q;
     end if;
     return f;
+end function;
+
+//gaussian binomial recursive alternative (slower, but why?)
+function q_binom(n,k,q)
+    if q eq 1 then
+        return Binomial(n,k);
+    elif n lt 0 or k lt 0 or n lt k then
+        return 0;
+    elif (n eq k) or (k eq 0) then
+        return 1;
+    else
+        return q^k * q_binom(n-1,k,q) + q_binom(n-1,k-1,q);
+    end if;
+    return "error";
 end function;
 
 //returns the product v * M (component wise on columns)
@@ -461,7 +475,7 @@ function supp_distr(C);
     n := Length(C);
     k := Dimension(C);
     supp := [[i] : i in [1..n]];
-    list := [Dimension(ShortenCode(C,Seqset(supp[j]))log;) : j in [1..#supp]];
+    list := [Dimension(ShortenCode(C,Seqset(supp[j]))) : j in [1..#supp]];
     distr := [[k],list];
     inv_list := [ [n , k] , [n-1 , Minimum(list)] ];
     for i in [2..n-1] do
