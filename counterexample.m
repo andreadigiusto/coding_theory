@@ -189,5 +189,23 @@ Maximum([MinimumDistance(list_D2[i]) : i in [1..#list_D2]]) lt 6;
     //mu_3(D2) = 4
 M := D2 meet M4;
 Dimension(M) eq 3;
+    //mu_3(D1) > 4: D1 does not contain a 3 dimensional subcode with minimum distance and covering radius equal to 5
+l := somesubcodes(D1,3,t);
+for i in [1..t] do
+    if MinimumDistance(l[i]) eq 5 and CoveringRadius(l[i]) eq 5 then
+        print("found a possible intersection");
+        i;
+        break;
+    end if;
+end for;
+    //old checks with list matching
     //mu_3(D1) > 4: there is no match between the lists of 3 dimensional subcodes of M4 and D1
 list_match(list_D1,list_M4) eq [ZeroCode(GF(7),8),ZeroCode(GF(7),8)];
+    //further check: reducing list_D1 by only considering the codes with covering radius=5
+list_D1_red := [];
+for i in [1..#list_D1] do
+    if CoveringRadius(list_D1[i]) eq 5 then
+        Append(~list_D1_red,list_D1[i]);
+    end if;
+end for;
+list_match(list_D1_red,list_M4) eq [ZeroCode(GF(7),8),ZeroCode(GF(7),8)];
