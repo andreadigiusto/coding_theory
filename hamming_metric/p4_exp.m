@@ -177,3 +177,55 @@ if switch eq 1 then
     V := AmbientSpace(CCC);
     y := Random(CCC) + V![0,0,0,0,0,0,0,1,2,3,0,0,0,0];
 end if;
+
+//standard construction (from "Wolf, On the codes derivable from the tensor product of check matrices")
+//the redundancy of Cin must be equal to the degree of the field extension over which Cout is built
+function stand_con(Cin,Cout)
+    n := Length(Cin);
+    m := Length(Cout);
+    kin := Dimension(Cin);
+    kout := Dimension(Cout);
+    G := GeneratorMatrix(Cin);
+    H := ParityCheckMatrix(Cin);
+    G1 := G;
+    H1 := H;
+    for i in [1..m-1] do
+        G1 := DiagonalJoin(G1,G);
+        H1 := DiagonalJoin(H1,H);
+    end for;
+    C1 := LinearCode(G1);
+    C2 := LinearCode(Matrix([Vector(&cat[Eltseq(c[i]) : i in [1..m]])*H1 : c in Cout]));
+    S := C1 + C2;
+    print("intersection of the two blocks");
+    C1 meet C2;
+    print("dimension constructed code");
+    Dimension(S);
+    print("expected dimension");
+    m*kin+(n-kin)*kout;
+    print("expected dimension tensor construction");
+    m*n-(n-kin)*(m-kout);
+    return S;
+end function;
+
+function gen_con(Cin,Cout1,Cout2)
+    n := Length(Cin);
+    m := Length(Cout);
+    kin := Dimension(Cin);
+    kout1 := Dimension(Cout1);
+    kout1 := Dimension(Cout2);
+    G := GeneratorMatrix(Cin);
+    H := ParityCheckMatrix(Cin);
+    G1 := G;
+    H1 := H;
+    for i in [1..m-1] do
+        G1 := DiagonalJoin(G1,G);
+        H1 := DiagonalJoin(H1,H);
+    end for;
+    C1 := LinearCode(Matrix([Vector(&cat[Eltseq(c[i]) : i in [1..m]])*G1 : c in Cout1]));
+    C2 := LinearCode(Matrix([Vector(&cat[Eltseq(c[i]) : i in [1..m]])*H1 : c in Cout2]));
+    S := C1 + C2;
+    print("dimension constructed code");
+    Dimension(S);
+    print("expected dimension");
+    kout1 * (n-kin) + kout2 * kin;
+end function;
