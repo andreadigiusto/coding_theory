@@ -17,3 +17,15 @@ function Dual(C)
     rows := Rows(ParityCheckMatrix(LinearCode(Matrix([Eltseq(basis[i]) : i in [1..#basis]]))));
     return sub<Fnm|[Matrix(n,m,rows[i]) : i in [1..#rows]]>;
 end function;
+
+//creates Gabidullin code in matrix form
+function Gabidullin_code(n,m,d,q)
+    k := n - d + 1;
+    K := GF(q);
+    Km := GF(q^m);
+    Fnm := KMatrixSpace(K,n,m);
+    B := Basis(Km,K)[1..n];
+    V := VectorSpace(Km,n);
+    W := sub< V | [V![B[i]^(q^j) : i in [1..n]] : j in [0..k-1]]>;
+    return sub<Fnm | [ Matrix([ Eltseq(w[i]) : i in [1..n]]) : w in W ] >;
+end function;
