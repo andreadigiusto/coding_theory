@@ -23,7 +23,7 @@ c3 := Matrix([e3,e4,e2+e3,e1+e2+e4]);
 c4 := Matrix([e4,e3+e4,e1+e2+e4,e1+e3+e4]);
 gen := [c1,c2,c3,c4];
 M1 := sub<Fnm|gen>;
-    //T(35)
+    //T(35), should be the one equivalent to Alberto's example on cov rad/maximality degree
 c1 := Matrix([e1,e2,e3,e4]);
 c2 := Matrix([e2,e1+e2,e3+e4,e3]);
 c3 := Matrix([e3,e4,e2,e1+e2]);

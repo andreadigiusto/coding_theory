@@ -153,6 +153,7 @@ function all_sub(C)
     return Reverse(LIST);
 end function;
 
+//looks for a match in subcode lists
 function list_match(l1,l2)
     n := Length(l1[1]);
     q := #Alphabet(l1[1]);

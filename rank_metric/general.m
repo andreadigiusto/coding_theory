@@ -26,6 +26,15 @@ function binom(u,v,q);
     return f;
 end function;
 
+//encodes a vector w.r.to a given basis B
+function rk_Enc(coeff,B)
+    K := BaseRing(B[1]);
+    if #coeff lt #B then
+        coeff := coeff cat [0 : i in [1..#B-#coeff]];
+    end if;
+    return &+[K!coeff[i]*B[i] : i in [1..#B]];
+end function;
+
 //given a subspace C of a matrix vector space, computes the minimum rank by brute force listing
 function MinRank(C)
     Cs := Exclude([x : x in C],C!0);
@@ -121,6 +130,27 @@ function rk_CovRad(C,ub_input,lb_input)
     end while;
 
     return r;
+end function;
+
+//creates a list of l random subcodes of C of dimension t
+function rk_somesubcodes(C,t,l)
+    K := BaseRing(C!0);
+    k := Dimension(C);
+    B := Basis(C);
+    if t gt k then
+        return "wrong parameters";
+    end if;
+    code_list := [];
+    while #code_list lt l do
+        coeff := RandomMatrix(K,t,k);
+        if Rank(coeff) eq t then
+            subcode := sub< Fnm | [rk_Enc(Eltseq(Rows(coeff)[i]),B) : i in [1..t]] >;
+            if subcode notin code_list then
+                Append(~code_list,subcode);
+            end if;
+        end if;
+    end while;
+    return code_list;
 end function;
 
 //creates Gabidullin code in matrix form
