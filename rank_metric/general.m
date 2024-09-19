@@ -153,6 +153,24 @@ function rk_somesubcodes(C,t,l)
     return code_list;
 end function;
 
+//given 2 codes, tests if any of their known invariants are different; fast negative answer to code equivalence
+function rk_pre_equiv(C1,C2)
+    if Dimension(C1) ne Dimension(C2) then
+        printf "dimensions are different\n";
+        return 0;
+    end if;
+    if rk_WeightDistr(C1) ne rk_WeightDistr(C2) then
+        printf "weight distributions are different\n";
+        return 0;
+    end if;
+    if rk_CovRad(C1,[],[]) ne rk_CovRad(C2,[],[]) then
+        print "covering radii are different\n";
+        return 0;
+    end if;
+    printf "all tested invariants are the same\n";
+    return 1;
+end function;
+
 //creates Gabidullin code in matrix form
 function Gabidullin_code(n,m,d,q)
     k := n - d + 1;
