@@ -96,13 +96,13 @@ function TensorCode(C1,C2)
     H2 := ParityCheckMatrix(C2);
     H := KroneckerProduct(H1,H2);
     C := Dual(LinearCode(H));
-    if Dimension(C) ge Dimension(BDLC(K,n,d)) then
-        print("this is a good code:");
-    else 
-        print("dio can");
-    end if;
+    //if Dimension(C) ge Dimension(BDLC(K,n,d)) then
+    //    print("this is a good code:");
+    //else 
+    //    print("dio can");
+    //end if;
     Dimension(C);
-    Dimension(BDLC(K,n,d));
+    //Dimension(BDLC(K,n,d));
     return C;
 end function;
 
