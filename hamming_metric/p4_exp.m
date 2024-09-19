@@ -82,9 +82,15 @@ function Split_diff_set(q,a,b,c,w)
     return &+[ (Binomial(b,j)*Binomial(b-j,2*(c-j))*(Hball_size(2*w,a,q)^j)*(Hball_size(w,a,q)^(2*(c-j)))) : j in [0..c]];
 end function;
 
-//computes asymptotic split GV bound, compares to standard GV (positive difference = advantage)
-function split_GV()
+//upper bound on difference set split channel
+function ub_split_DE(t,w,n,m,q)
+    C := &+[Binomial(m,w)*Binomial(m-gamma,2*(w-gamma)) : gamma in [0..w]];
+    return (Hball_size(t,n,q)^(2*w))*C;
+end function;
 
+//GV_split vs standard Hamming
+function beat_Hamming(t,w,n,m,q)
+    return (Log(2,Hball_size(t*w,n*m,q))-Log(2,ub_split_DE(t,w,n,m,q)))/(m*n);
 end function;
 
 //computes the tensor code C1 \otimes C2 (via pcm)
