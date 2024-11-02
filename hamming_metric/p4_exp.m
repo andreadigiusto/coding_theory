@@ -12,6 +12,14 @@ function H(q,x)
     return x * Log(q,q-1) - x * Log(q,x) - (1-x) * Log(q,1-x);
 end function;
 
+//exponent for asymptotic approximation of Hamming balls
+function F(q,x)
+    if x le (q-1)/q then
+        return H(q,x);
+    else return 1;
+    end if;
+end function;
+
 //computes the size of the hamming ball of radius r <= n
 function Hball_size(r,n,q)
     ball := 1;
@@ -91,6 +99,15 @@ end function;
 //GV_split vs standard Hamming
 function beat_Hamming(t,w,n,m,q)
     return (Log(2,Hball_size(t*w,n*m,q))-Log(2,ub_split_DE(t,w,n,m,q)))/(m*n);
+end function;
+
+//compare GV A and GV S
+function compare_GVs(t,w,n,m,q)
+    GVA := 1 - 2 * (w/m) * H(q,t/n);
+    GVS := 1 - ((2 * (w/m) - 1) * F(q,2*(t/n)) + 2 * (1 - (w/m)) * F(q,t/n));
+    GVA;
+    GVS;
+    return GVA - GVS;
 end function;
 
 //computes the tensor code C1 \otimes C2 (via pcm)
